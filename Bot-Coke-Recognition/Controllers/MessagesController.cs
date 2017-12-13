@@ -4,8 +4,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Internals;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.Bot.Connector;
 using Bot_Coke_Recognition.Dialogs;
 using Bot_Coke_Recognition.Helpers;
@@ -31,15 +34,22 @@ namespace Bot_Coke_Recognition
                         {
                             try
                             {
+                                //Get the attached image
                                 HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
                                 HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
                                 var file = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
+                                var thisImage = await file.Content.ReadAsStreamAsync();
 
-                                //StateClient stateClient = new StateClient(new MicrosoftAppCredentials("2405d9a4-cc5c-4da6-96c8-31d65beade23", "xqdRXRT76{yqinECL511)#|"));
-                                //BotData userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                                //userData.SetProperty<string>("imageTags", await VisionHelper.getTags(await file.Content.ReadAsStreamAsync()));
+                                //Cache the image in case its needed later for training
+                                CacheAttachment(thisImage, activity);
 
-                                activity.Text = await VisionHelper.getTags(await file.Content.ReadAsStreamAsync());
+                                //Determine what kind of picture this is
+                                activity.Text = VisionHelper.getTags(thisImage);
+                                //TODO: Figure out why the "None" tag doesn't trigger the LUIS None intent
+                                if (activity.Text == "None")
+                                {
+                                    activity.Text = "asdfadsfadsfdsaf";
+                                }
                             }
                             catch (Exception e)
                             {
@@ -48,12 +58,16 @@ namespace Bot_Coke_Recognition
                             }
                         }
                     }
+                    else
+                    {
+                        var thisasdf = "asdfasdf";
+                    }
                     // chain responses to the the Luis Response Dialog
                     var TypingReply = activity.CreateReply();
                     TypingReply.Type = ActivityTypes.Typing;
                     await cli.Conversations.ReplyToActivityAsync(TypingReply);
                     await Conversation.SendAsync(activity,
-                        () => { return Chain.From(() => new LuisResponseDialog() as IDialog<object>); });
+                        () => { return Chain.From(() => new BeverageDialog() as IDialog<object>); });
 
                     break;
                 case ActivityTypes.ConversationUpdate:
@@ -77,6 +91,33 @@ namespace Bot_Coke_Recognition
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        private bool CacheAttachment(dynamic thisAttachment, Activity thisActivity)
+        {
+            try
+            {
+                //send attachment to blob storage
+                BlobUtility thisBlob = new BlobUtility();
+                thisBlob.PutBlob(thisAttachment.ToString(), thisActivity.Id, "application/octet-stream", new BlobContainerPermissions());
+
+                //cache the attachment's URI in table storage
+                TableUtility thisTable = new TableUtility();
+                CloudTable myTable = thisTable.TableClient.GetTableReference("BotImageCache");
+                myTable.CreateIfNotExists();
+                ImageCache myCache = new ImageCache(thisActivity.ChannelId, thisActivity.Id);
+                myCache.location = thisBlob.BlobContainer.StorageUri.PrimaryUri.ToString();
+                //thisTable.Insert(myTable, myCache);
+                TableOperation insertOperation = TableOperation.Insert(myCache);
+                myTable.Execute(insertOperation);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
+                throw;
+            }
+
+            return true;
         }
 
         private Activity HandleSystemMessage(Activity message)

@@ -11,7 +11,7 @@ namespace Bot_Coke_Recognition.Helpers
     {
         static Guid defaultIterationId = new Guid("58de3af5-6330-433d-a230-8a537435372f");
         static Guid projectId = new Guid("ef2c19e0-a82d-4366-a9cb-6f5e7360ccfc");
-        public static async Task<string> getTags(Stream input)
+        public static string getTags(Stream input)
         {
             using (input)
             {
@@ -34,6 +34,12 @@ namespace Bot_Coke_Recognition.Helpers
                 }
                 return b.ToString();
             }
+        }
+
+        public static bool addImage(Stream image)
+        {
+            
+            return true;
         }
 
     }
