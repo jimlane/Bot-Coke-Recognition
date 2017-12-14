@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Collections.Generic;
+using System.IO;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -38,7 +38,7 @@ namespace Bot_Coke_Recognition
                                 HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
                                 HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
                                 var file = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
-                                var thisImage = await file.Content.ReadAsStreamAsync();
+                                Stream thisImage = await file.Content.ReadAsStreamAsync();
 
                                 //Cache the image in case its needed later for training
                                 CacheAttachment(thisImage, activity);
@@ -99,7 +99,7 @@ namespace Bot_Coke_Recognition
             {
                 //send attachment to blob storage
                 BlobUtility thisBlob = new BlobUtility();
-                thisBlob.PutBlob(thisAttachment.ToString(), thisActivity.Id, "application/octet-stream", new BlobContainerPermissions());
+                thisBlob.PutBlob(thisAttachment, thisActivity.Id, "application/octet-stream", new BlobContainerPermissions());
 
                 //cache the attachment's URI in table storage
                 TableUtility thisTable = new TableUtility();

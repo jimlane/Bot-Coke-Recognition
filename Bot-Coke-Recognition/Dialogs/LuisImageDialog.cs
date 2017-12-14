@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
@@ -20,6 +20,8 @@ namespace Bot_Coke_Recognition.Dialogs
     {
         private string origChan;
         private string origID;
+        private Stream fileImage;
+
         public LuisImageDialog(string ChanID, string convID)
         {
             this.origID = convID;
@@ -51,10 +53,17 @@ namespace Bot_Coke_Recognition.Dialogs
         public async Task CokeBottleIntent(IDialogContext context,
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            //TODO: retrieve image URL from table storage using context.ID as key
-            // then retrieve actual image from blob storage and send to image service
+            //retrieve the attachment from blob storage
             RetrieveAttachment();
-            await context.PostAsync("Added your image of a bottle of Coke");
+            //add this image to the Custom Vision repository and retrain the project
+            if (VisionHelper.addImage(fileImage, (List<string>)result.Entities))
+            {
+                await context.PostAsync("Added your image of a bottle of Coke");
+            }
+            else
+            {
+                await context.PostAsync("Something went wrong - try again later");
+            }
             context.Call(new BeverageDialog() as IDialog<object>, this.ResumeAfterImageAddition);
         }
 
@@ -119,9 +128,8 @@ namespace Bot_Coke_Recognition.Dialogs
                 }
 
                 //retrieve actual attachment from blob storage
-                var file = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
-                var thisImage = await file.Content.ReadAsStreamAsync();
-                VisionHelper.addImage(thisImage);
+                BlobUtility thisBlob = new BlobUtility();
+                fileImage = thisBlob.GetBlob(myCache.location);
             }
             catch (Exception e)
             {

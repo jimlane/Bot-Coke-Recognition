@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.Cognitive.CustomVision;
-using System.Threading.Tasks;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Bot_Coke_Recognition.Helpers
 {
@@ -15,30 +15,54 @@ namespace Bot_Coke_Recognition.Helpers
         {
             using (input)
             {
-                StringBuilder b = new StringBuilder();
-                PredictionEndpointCredentials credentials = new PredictionEndpointCredentials("ba8fbc38188a44f5a3ceee53ff439817");
-                PredictionEndpoint cli = new PredictionEndpoint(credentials);
-                foreach (var p in cli.PredictImage(projectId, input).Predictions)
+                try
                 {
-                    var probability = p.Probability;
-                    if (probability > 1)
-                        probability /= 100;
-                    if (probability > 0.5)
+                    StringBuilder b = new StringBuilder();
+                    PredictionEndpointCredentials credentials = new PredictionEndpointCredentials("ba8fbc38188a44f5a3ceee53ff439817");
+                    PredictionEndpoint cli = new PredictionEndpoint(credentials);
+                    foreach (var p in cli.PredictImage(projectId, input).Predictions)
                     {
-                        b.Append(p.Tag + " ");
+                        var probability = p.Probability;
+                        if (probability > 1)
+                            probability /= 100;
+                        if (probability > 0.5)
+                        {
+                            b.Append(p.Tag + " ");
+                        }
                     }
+                    if (b.Length < 1)
+                    {
+                        b.Append("None");
+                    }
+                    return b.ToString();
                 }
-                if (b.Length < 1)
+                catch (Exception e)
                 {
-                    b.Append("None");
+                    System.Diagnostics.Debug.WriteLine(e.Message.ToString());
+                    throw;
                 }
-                return b.ToString();
             }
         }
 
-        public static bool addImage(Stream image)
+        public static bool addImage(Stream image, List<string> tags)
         {
-            
+            try
+            {
+                TrainingApiCredentials trainingCredentials = new TrainingApiCredentials("1f790af625894f61be692809f81ff828");
+                TrainingApi cli = new TrainingApi(trainingCredentials);
+                cli.CreateImagesFromData(projectId, image, tags);
+                cli.TrainProject(projectId);
+                return true;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
+                return false;
+            }
+        }
+
+        public static bool retrainProject()
+        {
             return true;
         }
 
