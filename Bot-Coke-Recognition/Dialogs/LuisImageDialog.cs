@@ -7,8 +7,8 @@ using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Table;
+using System.Web.Http;
+using System.Net.Http.Headers;
 using Bot_Coke_Recognition.Helpers;
 
 
@@ -20,13 +20,7 @@ namespace Bot_Coke_Recognition.Dialogs
     {
         private string origChan;
         private string origID;
-        private Stream fileImage;
-
-        public LuisImageDialog(string ChanID, string convID)
-        {
-            this.origID = convID;
-            this.origChan = ChanID;
-        }
+        private static Stream fileImage;
 
         [LuisIntent("Can-Of-Coke")]
         public async Task CokeCanIntent(IDialogContext context,
@@ -53,18 +47,29 @@ namespace Bot_Coke_Recognition.Dialogs
         public async Task CokeBottleIntent(IDialogContext context,
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            //retrieve the attachment from blob storage
-            RetrieveAttachment();
-            //add this image to the Custom Vision repository and retrain the project
-            if (VisionHelper.addImage(fileImage, (List<string>)result.Entities))
+            try
             {
-                await context.PostAsync("Added your image of a bottle of Coke");
+                Activity a = (Activity)context.Activity;
+                //add this image to the Custom Vision repository and retrain the project
+                List<string> myList = new List<string>();
+                myList.Add("can");
+                myList.Add("bottle");
+                if (VisionHelper.addImage(await RetrieveAttachment(a.Attachments[0].ContentUrl), myList))
+                {
+                    await context.PostAsync("Added your image of a bottle of Coke");
+                }
+                else
+                {
+                    await context.PostAsync("Something went wrong - try again later");
+                }
+                
+                context.Call(new BeverageDialog() as IDialog<object>, this.ResumeAfterImageAddition);
             }
-            else
+            catch (Exception e)
             {
-                await context.PostAsync("Something went wrong - try again later");
+                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
+                throw;
             }
-            context.Call(new BeverageDialog() as IDialog<object>, this.ResumeAfterImageAddition);
         }
 
         [LuisIntent("Bottle-Of-Diet-Coke")]
@@ -113,31 +118,24 @@ namespace Bot_Coke_Recognition.Dialogs
             context.Done("");
         }
 
-        private bool RetrieveAttachment()
+        private async Task<Stream> RetrieveAttachment(string thisURL)
         {
             try
             {
-                //retrieve the attachment's URI from table storage
-                TableUtility thisTable = new TableUtility();
-                CloudTable myTable = thisTable.TableClient.GetTableReference("BotImageCache");
-                TableQuery<ImageCache> query = new TableQuery<ImageCache>().Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, this.origID));
-                ImageCache myCache = new ImageCache();
-                foreach (ImageCache item in myTable.ExecuteQuery(query))
+                using (var HttpCli = new HttpClient())
                 {
-                    myCache.location = item.location;
+                    //Get the attached image
+                    HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
+                    HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
+                    var file1 = await HttpCli.GetAsync(thisURL);
+                    return await file1.Content.ReadAsStreamAsync();
                 }
-
-                //retrieve actual attachment from blob storage
-                BlobUtility thisBlob = new BlobUtility();
-                fileImage = thisBlob.GetBlob(myCache.location);
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message.ToString());
                 throw;
             }
-
-            return true;
         }
 
     }

@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Cognitive.CustomVision;
+using Microsoft.Bot.Builder.Luis;
+using Microsoft.Bot.Builder.Luis.Models;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
@@ -20,7 +22,8 @@ namespace Bot_Coke_Recognition.Helpers
                     StringBuilder b = new StringBuilder();
                     PredictionEndpointCredentials credentials = new PredictionEndpointCredentials("ba8fbc38188a44f5a3ceee53ff439817");
                     PredictionEndpoint cli = new PredictionEndpoint(credentials);
-                    foreach (var p in cli.PredictImage(projectId, input).Predictions)
+                    var result = cli.PredictImage(projectId, input);
+                    foreach (var p in result.Predictions)
                     {
                         var probability = p.Probability;
                         if (probability > 1)
@@ -50,7 +53,7 @@ namespace Bot_Coke_Recognition.Helpers
             {
                 TrainingApiCredentials trainingCredentials = new TrainingApiCredentials("1f790af625894f61be692809f81ff828");
                 TrainingApi cli = new TrainingApi(trainingCredentials);
-                cli.CreateImagesFromData(projectId, image, tags);
+                cli.CreateImagesFromData(projectId, image, new List<string>());
                 cli.TrainProject(projectId);
                 return true;
             }

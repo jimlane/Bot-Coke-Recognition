@@ -14,6 +14,7 @@ namespace Bot_Coke_Recognition.Dialogs
     {
         private string origChan;
         private string origID;
+        private string attachURL;
         public Task StartAsync(IDialogContext context)
         {
             this.origChan = context.Activity.ChannelId;
@@ -25,8 +26,13 @@ namespace Bot_Coke_Recognition.Dialogs
 
         public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
-            var message = await result as Activity;
-            switch (message.Text.ToLower())
+            Activity a = (Activity)context.Activity;
+            if (a.Attachments.Count > 0)
+            {
+                attachURL = a.Attachments[0].ContentUrl;
+            }
+            //var message = await result as Activity;
+            switch (a.Text.ToLower())
             {
                 case "yes":
                     await context.PostAsync("OK, tell me what beverage this is");
@@ -39,8 +45,10 @@ namespace Bot_Coke_Recognition.Dialogs
 
         public async Task GetResponse(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
-            IMessageActivity message = await result;
-            await context.Forward(new LuisImageDialog(this.origChan, this.origID) as IDialog<object>, this.ResumeAfterLuisImageDialog, message, context.CancellationToken);
+            Activity a = (Activity)context.Activity;
+            a.Attachments.Insert(0, new Attachment());
+            a.Attachments[0].ContentUrl = attachURL;
+            await context.Forward(new LuisImageDialog() as IDialog<object>, this.ResumeAfterLuisImageDialog, a, context.CancellationToken);
         }
 
         private async Task ResumeAfterLuisImageDialog(IDialogContext context, IAwaitable<object> result)

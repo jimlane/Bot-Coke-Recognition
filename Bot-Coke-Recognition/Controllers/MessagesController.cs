@@ -24,7 +24,8 @@ namespace Bot_Coke_Recognition
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            var cli = new ConnectorClient(new Uri(activity.ServiceUrl));
+            Stream thisImage = null;
+            var cli = new ConnectorClient(new Uri(activity.ServiceUrl));    
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
@@ -37,14 +38,12 @@ namespace Bot_Coke_Recognition
                                 //Get the attached image
                                 HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
                                 HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
-                                var file = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
-                                Stream thisImage = await file.Content.ReadAsStreamAsync();
-
-                                //Cache the image in case its needed later for training
-                                CacheAttachment(thisImage, activity);
+                                var file1 = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
+                                thisImage = await file1.Content.ReadAsStreamAsync();
 
                                 //Determine what kind of picture this is
                                 activity.Text = VisionHelper.getTags(thisImage);
+
                                 //TODO: Figure out why the "None" tag doesn't trigger the LUIS None intent
                                 if (activity.Text == "None")
                                 {
@@ -57,10 +56,6 @@ namespace Bot_Coke_Recognition
                                 throw;
                             }
                         }
-                    }
-                    else
-                    {
-                        var thisasdf = "asdfasdf";
                     }
                     // chain responses to the the Luis Response Dialog
                     var TypingReply = activity.CreateReply();
