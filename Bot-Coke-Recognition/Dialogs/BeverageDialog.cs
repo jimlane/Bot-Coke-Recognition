@@ -15,7 +15,12 @@ namespace Bot_Coke_Recognition.Dialogs
     [Serializable]
     public class BeverageDialog : LuisDialog<object>
     {
-        private Stream thisAttachment = null;
+        [LuisIntent("Non-Beverage")]
+        public async Task NonBeverageIntent(IDialogContext context,
+            IAwaitable<IMessageActivity> activity, LuisResult result)
+        {
+            await context.PostAsync("Why?");
+        }
 
         [LuisIntent("Can-Of-Coke")]
         public async Task CokeCanIntent(IDialogContext context,
@@ -92,9 +97,14 @@ namespace Bot_Coke_Recognition.Dialogs
         IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             Activity a = (Activity)context.Activity;
-            await context.PostAsync("Sorry, I can't determine what that is.");
             await context.Forward(new NewImageDialog() as IDialog<object>, this.ResumeAfterNewImageDialog, a, context.CancellationToken);
         }
 
+        [LuisIntent("")]
+        public async Task UnknownIntent(IDialogContext context,
+        IAwaitable<IMessageActivity> activity, LuisResult result)
+        {
+            await context.PostAsync("Why!");
+        }
     }
 }

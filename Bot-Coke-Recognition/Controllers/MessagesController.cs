@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.IO;
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -12,6 +12,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.Bot.Connector;
 using Bot_Coke_Recognition.Dialogs;
 using Bot_Coke_Recognition.Helpers;
+using Newtonsoft.Json.Linq;
 
 namespace Bot_Coke_Recognition
 {
@@ -24,8 +25,10 @@ namespace Bot_Coke_Recognition
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            Stream thisImage = null;
-            var cli = new ConnectorClient(new Uri(activity.ServiceUrl));    
+            var cli = new ConnectorClient(new Uri(activity.ServiceUrl));
+            PredictionResults theseResults = new PredictionResults();
+            Activity TypingReply = null;
+            List<string> ImageTags = new List<string>();
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
@@ -39,10 +42,48 @@ namespace Bot_Coke_Recognition
                                 HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
                                 HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
                                 var file1 = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
-                                thisImage = await file1.Content.ReadAsStreamAsync();
+                                var thisImage1 = await file1.Content.ReadAsStreamAsync();
+                                var file2 = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
+                                var thisImage2 = await file2.Content.ReadAsStreamAsync();
+
+                                //Begin reply
+                                TypingReply = activity.CreateReply();
+                                TypingReply.Type = ActivityTypes.Typing;
+                                await cli.Conversations.ReplyToActivityAsync(TypingReply);
 
                                 //Determine what kind of picture this is
-                                activity.Text = VisionHelper.getTags(thisImage);
+                                ImageTags = await ComputerVisionHelper.AnalyzeImage(thisImage1);
+                                if (ThisIsABeveragePicture(ImageTags))
+                                {
+                                    //Determine if we've seen this beverage image before
+                                    theseResults = CustomVisionHelper.PredictImage(thisImage2);
+                                    if (theseResults.Positives.Count > 0)
+                                    {
+                                        // We've seen this image before
+                                        activity.Text = theseResults.Positives[0].ToString() + " " + theseResults.Positives[1].ToString();
+                                        await Conversation.SendAsync(activity,
+                                            () => { return Chain.From(() => new BeverageDialog() as IDialog<object>); });
+                                    }
+                                    else if (theseResults.Maybes.Count > 0)
+                                    {
+                                        // This is probably a new beverage image
+                                        await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
+                                            () => { return Chain.From(() => new NewImageDialog() as IDialog<object>); });
+                                    }
+                                    else
+                                    {
+                                        // chain responses to the the Luis NonBeverage Dialog
+                                        await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
+                                            () => { return Chain.From(() => new NonBeverageDialog() as IDialog<object>); });
+                                    }
+                                }
+                                else
+                                {
+                                    // chain responses to the the LUIS NonBeverage Dialog
+                                    activity.Text = "non beverage";
+                                    await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
+                                        () => { return Chain.From(() => new NonBeverageDialog() as IDialog<object>); });
+                                }
 
                                 //TODO: Figure out why the "None" tag doesn't trigger the LUIS None intent
                                 if (activity.Text == "None")
@@ -57,12 +98,6 @@ namespace Bot_Coke_Recognition
                             }
                         }
                     }
-                    // chain responses to the the Luis Response Dialog
-                    var TypingReply = activity.CreateReply();
-                    TypingReply.Type = ActivityTypes.Typing;
-                    await cli.Conversations.ReplyToActivityAsync(TypingReply);
-                    await Conversation.SendAsync(activity,
-                        () => { return Chain.From(() => new BeverageDialog() as IDialog<object>); });
 
                     break;
                 case ActivityTypes.ConversationUpdate:
@@ -88,31 +123,27 @@ namespace Bot_Coke_Recognition
             return response;
         }
 
-        private bool CacheAttachment(dynamic thisAttachment, Activity thisActivity)
+        private bool ThisIsABeveragePicture(List<string> imageTags)
         {
-            try
+            foreach (var item in imageTags)
             {
-                //send attachment to blob storage
-                BlobUtility thisBlob = new BlobUtility();
-                thisBlob.PutBlob(thisAttachment, thisActivity.Id, "application/octet-stream", new BlobContainerPermissions());
-
-                //cache the attachment's URI in table storage
-                TableUtility thisTable = new TableUtility();
-                CloudTable myTable = thisTable.TableClient.GetTableReference("BotImageCache");
-                myTable.CreateIfNotExists();
-                ImageCache myCache = new ImageCache(thisActivity.ChannelId, thisActivity.Id);
-                myCache.location = thisBlob.BlobContainer.StorageUri.PrimaryUri.ToString();
-                //thisTable.Insert(myTable, myCache);
-                TableOperation insertOperation = TableOperation.Insert(myCache);
-                myTable.Execute(insertOperation);
+                if (item.IndexOf("beverage") >= 0 ||
+                    item.IndexOf("can") >= 0 ||
+                    item.IndexOf("bottle") >= 0)
+                {
+                    return true;
+                }
             }
-            catch (Exception e)
+            return false;
+        }
+
+        private Activity GatherImageTags(Activity currentActivity, List<string> theseTags)
+        {
+            foreach (var item in theseTags)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
-                throw;
+                currentActivity.Properties.Add(new JProperty(currentActivity.Properties.Count.ToString(), item));
             }
-
-            return true;
+            return currentActivity;
         }
 
         private Activity HandleSystemMessage(Activity message)

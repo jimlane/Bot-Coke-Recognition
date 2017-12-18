@@ -9,17 +9,17 @@ using System.Collections.Generic;
 namespace Bot_Coke_Recognition.Helpers
 {
     [Serializable]
-    public class VisionHelper
+    public class CustomVisionHelper
     {
         static Guid defaultIterationId = new Guid("58de3af5-6330-433d-a230-8a537435372f");
         static Guid projectId = new Guid("ef2c19e0-a82d-4366-a9cb-6f5e7360ccfc");
-        public static string getTags(Stream input)
+        public static PredictionResults PredictImage(Stream input)
         {
+            PredictionResults theseResults = new PredictionResults();
             using (input)
             {
                 try
                 {
-                    StringBuilder b = new StringBuilder();
                     PredictionEndpointCredentials credentials = new PredictionEndpointCredentials("ba8fbc38188a44f5a3ceee53ff439817");
                     PredictionEndpoint cli = new PredictionEndpoint(credentials);
                     var result = cli.PredictImage(projectId, input);
@@ -28,16 +28,19 @@ namespace Bot_Coke_Recognition.Helpers
                         var probability = p.Probability;
                         if (probability > 1)
                             probability /= 100;
-                        if (probability > 0.5)
+                        if (probability > 0.9)
                         {
-                            b.Append(p.Tag + " ");
+                            theseResults.Positives.Add(p.Tag);
+                        }
+                        else if (probability > 0.5)
+                        {
+                            theseResults.Maybes.Add(p.Tag);
+                        }else
+                        {
+                            theseResults.Negatives.Add(p.Tag);
                         }
                     }
-                    if (b.Length < 1)
-                    {
-                        b.Append("None");
-                    }
-                    return b.ToString();
+                    return theseResults;
                 }
                 catch (Exception e)
                 {

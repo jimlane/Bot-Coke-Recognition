@@ -54,7 +54,7 @@ namespace Bot_Coke_Recognition.Dialogs
                 List<string> myList = new List<string>();
                 myList.Add("can");
                 myList.Add("bottle");
-                if (VisionHelper.addImage(await RetrieveAttachment(a.Attachments[0].ContentUrl), myList))
+                if (CustomVisionHelper.addImage(await RetrieveAttachment(a.Attachments[0].ContentUrl), myList))
                 {
                     await context.PostAsync("Added your image of a bottle of Coke");
                 }

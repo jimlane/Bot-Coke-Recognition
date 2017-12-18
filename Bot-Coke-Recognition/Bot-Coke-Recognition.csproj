@@ -92,6 +92,9 @@
     <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.4\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ProjectOxford.Vision, Version=1.0.393.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ProjectOxford.Vision.1.0.393\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Microsoft.ProjectOxford.Vision.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\Microsoft.Rest.ClientRuntime.2.3.2\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
     </Reference>
@@ -174,6 +177,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="Dialogs\NonBeverageDialog.cs" />
     <Compile Include="Dialogs\LuisImageDialog.cs" />
     <Compile Include="Dialogs\NewImageDialog.cs" />
     <Compile Include="Dialogs\BeverageDialog.cs" />
@@ -185,9 +189,11 @@
     <Compile Include="Helpers\BlobStorageHelper.cs" />
     <Compile Include="Helpers\Azure\IBlobUtility.cs" />
     <Compile Include="Helpers\Azure\StorageBase.cs" />
+    <Compile Include="Helpers\ComputerVisionHelper.cs" />
     <Compile Include="Helpers\ImageCache.cs" />
+    <Compile Include="Helpers\PredictionResults.cs" />
     <Compile Include="Helpers\TableStorageHelper.cs" />
-    <Compile Include="Helpers\VisionHelper.cs" />
+    <Compile Include="Helpers\CustomVisionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
