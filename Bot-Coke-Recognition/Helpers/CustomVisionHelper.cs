@@ -28,7 +28,7 @@ namespace Bot_Coke_Recognition.Helpers
                         var probability = p.Probability;
                         if (probability > 1)
                             probability /= 100;
-                        if (probability > 0.9)
+                        if (probability > 0.92)
                         {
                             theseResults.Positives.Add(p.Tag);
                         }

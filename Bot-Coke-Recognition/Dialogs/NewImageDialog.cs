@@ -12,34 +12,34 @@ namespace Bot_Coke_Recognition.Dialogs
     [Serializable]
     public class NewImageDialog : IDialog<object>
     {
-        private string origChan;
-        private string origID;
+        //private string origChan;
+        //private string origID;
         private string attachURL;
-        public Task StartAsync(IDialogContext context)
+        public async Task StartAsync(IDialogContext context)
         {
-            this.origChan = context.Activity.ChannelId;
-            this.origID = context.Activity.Id;
-            context.PostAsync("Do you want to add this image to the library?");
-            context.Wait(MessageReceivedAsync);
-            return Task.CompletedTask;
+            //this.origChan = context.Activity.ChannelId;
+            //this.origID = context.Activity.Id;
+            await context.PostAsync("This looks like a Coca-Cola beverage, but I haven't seen this image before.");
+            await context.PostAsync("Would you like me to add this image to the library?");
+            context.Wait(this.MessageReceivedAsync);
         }
 
-        public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
+        public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
             Activity a = (Activity)context.Activity;
             if (a.Attachments.Count > 0)
             {
                 attachURL = a.Attachments[0].ContentUrl;
             }
-            //var message = await result as Activity;
-            switch (a.Text.ToLower())
+            var message = await result;
+            if (message.Text.ToLower() == "yes")
             {
-                case "yes":
-                    await context.PostAsync("OK, tell me what beverage this is");
-                    context.Wait(GetResponse);
-                    break;
-                default:
-                    break;
+                await context.PostAsync("OK, tell me what beverage this is");
+                context.Wait(GetResponse);
+            }
+            else
+            {
+                context.Wait(this.MessageReceivedAsync);
             }
         }
 

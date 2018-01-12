@@ -57,7 +57,7 @@ namespace Bot_Coke_Recognition
                                 {
                                     //Determine if we've seen this beverage image before
                                     theseResults = CustomVisionHelper.PredictImage(thisImage2);
-                                    if (theseResults.Positives.Count > 0)
+                                    if (theseResults.Positives.Count == 2)
                                     {
                                         // We've seen this image before
                                         activity.Text = theseResults.Positives[0].ToString() + " " + theseResults.Positives[1].ToString();
@@ -67,8 +67,11 @@ namespace Bot_Coke_Recognition
                                     else if (theseResults.Maybes.Count > 0)
                                     {
                                         // This is probably a new beverage image
-                                        await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
-                                            () => { return Chain.From(() => new NewImageDialog() as IDialog<object>); });
+                                        activity.Text = theseResults.Maybes[0].ToString();
+                                        
+                                        await Conversation.SendAsync(GatherImageTags(activity, ImageTags), () => new NewImageDialog());
+                                        //await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
+                                        //    () => { return Chain.From(() => new NewImageDialog() as IDialog<object>); });
                                     }
                                     else
                                     {
@@ -116,7 +119,7 @@ namespace Bot_Coke_Recognition
                     }
                     break;
                 default:
-                    HandleSystemMessage(activity);
+                    //HandleSystemMessage(activity);
                     break;
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
@@ -137,7 +140,7 @@ namespace Bot_Coke_Recognition
             return false;
         }
 
-        private Activity GatherImageTags(Activity currentActivity, List<string> theseTags)
+        private IMessageActivity GatherImageTags(Activity currentActivity, List<string> theseTags)
         {
             foreach (var item in theseTags)
             {
