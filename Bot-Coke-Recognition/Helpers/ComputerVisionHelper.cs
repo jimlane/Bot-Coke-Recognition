@@ -13,7 +13,7 @@ namespace Bot_Coke_Recognition.Helpers
         {
             AnalysisResult analysisResult;
             var features = new VisualFeature[] { VisualFeature.Tags, VisualFeature.Description };
-            var visionClient = new VisionServiceClient("6489e6ede93a4feb81de2cf2a6e0aa1f", "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0");
+            var visionClient = new VisionServiceClient("ebbecef60400431492feb902f22a28fe", "https://eastus2.api.cognitive.microsoft.com/vision/v1.0");
             List<string> imageTags = new List<string>();
 
             try

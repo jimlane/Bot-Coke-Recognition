@@ -27,6 +27,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Coke");
+            context.Done("");
         }
 
         [LuisIntent("Can-Of-CokeZero")]
@@ -34,6 +35,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Coke Zero");
+            context.Done("");
         }
 
         [LuisIntent("Can-Of-Diet-Coke")]
@@ -41,6 +43,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Diet Coke");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-Coke")]
@@ -48,6 +51,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Coke");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-Diet-Coke")]
@@ -55,6 +59,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Diet Coke");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-CokeZero")]
@@ -62,6 +67,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Coke Zero");
+            context.Done("");
         }
 
         [LuisIntent("Can-Of-Sprite")]
@@ -69,6 +75,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Sprite");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-Sprite")]
@@ -76,6 +83,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Sprite");
+            context.Done("");
         }
 
         [LuisIntent("Casual-Chat")]
@@ -83,6 +91,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Hello - send me a picture!");
+            context.Done("");
         }
 
         private async Task ResumeAfterNewImageDialog(IDialogContext context, IAwaitable<object> result)
@@ -96,15 +105,16 @@ namespace Bot_Coke_Recognition.Dialogs
         public async Task NoneIntent(IDialogContext context,
         IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            Activity a = (Activity)context.Activity;
-            await context.Forward(new NewImageDialog() as IDialog<object>, this.ResumeAfterNewImageDialog, a, context.CancellationToken);
+            await context.PostAsync("BeverageDialog.cs - something went wrong!");
+            context.Done("");
         }
 
         [LuisIntent("")]
         public async Task UnknownIntent(IDialogContext context,
         IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            await context.PostAsync("Why!");
+            await context.PostAsync("BeverageDialog.cs - something went wrong!");
+            context.Done("");
         }
     }
 }

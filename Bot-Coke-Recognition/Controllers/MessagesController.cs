@@ -26,82 +26,10 @@ namespace Bot_Coke_Recognition
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
             var cli = new ConnectorClient(new Uri(activity.ServiceUrl));
-            PredictionResults theseResults = new PredictionResults();
-            Activity TypingReply = null;
-            List<string> ImageTags = new List<string>();
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
-                    if (activity.Attachments.Count > 0)
-                    {
-                        using (var HttpCli = new HttpClient())
-                        {
-                            try
-                            {
-                                //Get the attached image
-                                HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
-                                HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
-                                var file1 = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
-                                var thisImage1 = await file1.Content.ReadAsStreamAsync();
-                                var file2 = await HttpCli.GetAsync(activity.Attachments[0].ContentUrl);
-                                var thisImage2 = await file2.Content.ReadAsStreamAsync();
-
-                                //Begin reply
-                                TypingReply = activity.CreateReply();
-                                TypingReply.Type = ActivityTypes.Typing;
-                                await cli.Conversations.ReplyToActivityAsync(TypingReply);
-
-                                //Determine what kind of picture this is
-                                ImageTags = await ComputerVisionHelper.AnalyzeImage(thisImage1);
-                                if (ThisIsABeveragePicture(ImageTags))
-                                {
-                                    //Determine if we've seen this beverage image before
-                                    theseResults = CustomVisionHelper.PredictImage(thisImage2);
-                                    if (theseResults.Positives.Count == 2)
-                                    {
-                                        // We've seen this image before
-                                        activity.Text = theseResults.Positives[0].ToString() + " " + theseResults.Positives[1].ToString();
-                                        await Conversation.SendAsync(activity,
-                                            () => { return Chain.From(() => new BeverageDialog() as IDialog<object>); });
-                                    }
-                                    else if (theseResults.Maybes.Count > 0)
-                                    {
-                                        // This is probably a new beverage image
-                                        activity.Text = theseResults.Maybes[0].ToString();
-                                        
-                                        await Conversation.SendAsync(GatherImageTags(activity, ImageTags), () => new NewImageDialog());
-                                        //await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
-                                        //    () => { return Chain.From(() => new NewImageDialog() as IDialog<object>); });
-                                    }
-                                    else
-                                    {
-                                        // chain responses to the the Luis NonBeverage Dialog
-                                        await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
-                                            () => { return Chain.From(() => new NonBeverageDialog() as IDialog<object>); });
-                                    }
-                                }
-                                else
-                                {
-                                    // chain responses to the the LUIS NonBeverage Dialog
-                                    activity.Text = "non beverage";
-                                    await Conversation.SendAsync(GatherImageTags(activity, ImageTags),
-                                        () => { return Chain.From(() => new NonBeverageDialog() as IDialog<object>); });
-                                }
-
-                                //TODO: Figure out why the "None" tag doesn't trigger the LUIS None intent
-                                if (activity.Text == "None")
-                                {
-                                    activity.Text = "asdfadsfadsfdsaf";
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
-                                throw;
-                            }
-                        }
-                    }
-
+                    await Conversation.SendAsync(activity, () => new RootDialog());
                     break;
                 case ActivityTypes.ConversationUpdate:
                     if (activity.MembersAdded.Count > 0)
@@ -119,7 +47,7 @@ namespace Bot_Coke_Recognition
                     }
                     break;
                 default:
-                    //HandleSystemMessage(activity);
+                    HandleSystemMessage(activity);
                     break;
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);

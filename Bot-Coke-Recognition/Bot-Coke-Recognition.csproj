@@ -185,14 +185,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\Azure\ITableUtility.cs" />
-    <Compile Include="Helpers\BlobStorageHelper.cs" />
-    <Compile Include="Helpers\Azure\IBlobUtility.cs" />
-    <Compile Include="Helpers\Azure\StorageBase.cs" />
     <Compile Include="Helpers\ComputerVisionHelper.cs" />
-    <Compile Include="Helpers\ImageCache.cs" />
     <Compile Include="Helpers\PredictionResults.cs" />
-    <Compile Include="Helpers\TableStorageHelper.cs" />
     <Compile Include="Helpers\CustomVisionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

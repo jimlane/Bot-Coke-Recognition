@@ -56,7 +56,7 @@ namespace Bot_Coke_Recognition.Helpers
             {
                 TrainingApiCredentials trainingCredentials = new TrainingApiCredentials("1f790af625894f61be692809f81ff828");
                 TrainingApi cli = new TrainingApi(trainingCredentials);
-                cli.CreateImagesFromData(projectId, image, new List<string>());
+                cli.CreateImagesFromData(projectId, image, new List<string>(tags));
                 cli.TrainProject(projectId);
                 return true;
             }

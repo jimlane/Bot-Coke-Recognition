@@ -26,7 +26,29 @@ namespace Bot_Coke_Recognition.Dialogs
         public async Task CokeCanIntent(IDialogContext context,
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            await context.PostAsync("Added your image of a can of Coke");
+            try
+            {
+                Activity a = (Activity)context.Activity;
+                //add this image to the Custom Vision repository and retrain the project
+                List<string> myList = new List<string>();
+                myList.Add("can");
+                myList.Add("coke");
+                if (CustomVisionHelper.addImage(await RetrieveAttachment(a.Attachments[0].ContentUrl), myList))
+                {
+                    await context.PostAsync("Added your image of a can of Coke");
+                }
+                else
+                {
+                    await context.PostAsync("Something went wrong - try again later");
+                }
+
+                context.Done("");
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
+                throw;
+            }
         }
 
         [LuisIntent("Can-Of-CokeZero")]
@@ -34,6 +56,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Added your image of a can of Coke Zero");
+            context.Done("");
         }
 
         [LuisIntent("Can-Of-Diet-Coke")]
@@ -41,6 +64,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Added your image of a can of Diet Coke");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-Coke")]
@@ -62,8 +86,8 @@ namespace Bot_Coke_Recognition.Dialogs
                 {
                     await context.PostAsync("Something went wrong - try again later");
                 }
-                
-                context.Call(new BeverageDialog() as IDialog<object>, this.ResumeAfterImageAddition);
+
+                context.Done("");
             }
             catch (Exception e)
             {
@@ -77,6 +101,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Added your image of a bottle of Diet Coke");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-CokeZero")]
@@ -84,6 +109,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Added your image of a bottle of Coke Zeror");
+            context.Done("");
         }
 
         [LuisIntent("Can-Of-Sprite")]
@@ -91,6 +117,7 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Added your image of a can of Sprite");
+            context.Done("");
         }
 
         [LuisIntent("Bottle-Of-Sprite")]
@@ -98,20 +125,23 @@ namespace Bot_Coke_Recognition.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Added your image of a bottle of Sprite");
+            context.Done("");
         }
 
         [LuisIntent("Casual-Chat")]
         public async Task CasualChatIntent(IDialogContext context,
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            await context.PostAsync("I don't understand your input - resetting");
+            await context.PostAsync("LuisImageDialog.cs - I don't understand your input - resetting");
+            context.Done("");
         }
 
         [LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context,
         IAwaitable<IMessageActivity> activity, LuisResult result)
         {
-            await context.PostAsync("I don't understand your input - resetting");
+            await context.PostAsync("LuisImageDialog.cs - I don't understand your input - resetting");
+            context.Done("");
         }
         private async Task ResumeAfterImageAddition(IDialogContext context, IAwaitable<object> result)
         {

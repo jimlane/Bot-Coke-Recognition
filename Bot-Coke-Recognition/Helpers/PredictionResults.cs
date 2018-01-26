@@ -5,6 +5,7 @@ using System.Web;
 
 namespace Bot_Coke_Recognition.Helpers
 {
+    [Serializable]
     public class PredictionResults
     {
         public PredictionResults ()
