@@ -156,7 +156,7 @@ namespace Bot_Coke_Recognition.Dialogs
                 {
                     //Get the attached image
                     HttpCli.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await new MicrosoftAppCredentials().GetTokenAsync());
-                    HttpCli.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/octet-stream"));
+                    HttpCli.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
                     var file1 = await HttpCli.GetAsync(thisURL);
                     return await file1.Content.ReadAsStreamAsync();
                 }

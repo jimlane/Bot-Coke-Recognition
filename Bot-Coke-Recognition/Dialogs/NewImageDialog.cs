@@ -46,6 +46,7 @@ namespace Bot_Coke_Recognition.Dialogs
                         activity.Attachments.Add(new Attachment());
                         activity.Attachments[0].ContentUrl = attachURL;
                         await context.Forward(new LuisImageDialog(), this.ResumeAfterAddImageDialog, activity, CancellationToken.None);
+                        context.Done("");
                         break;
                     case DontAddImage:
                         await context.PostAsync("OK, thanks for sharing your picture!");
