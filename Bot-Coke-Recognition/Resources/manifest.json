@@ -2,11 +2,11 @@
   "$schema": "https://statics.teams.microsoft.com/sdk/v1.0/manifest/MicrosoftTeams.schema.json",
   "manifestVersion": "1.0",
   "version": "1.0.0",
-  "id": "f3758b63-c13d-497d-ab2e-241d1df2e432",
-  "packageName": "net.azurewebsites.beveragerecognition",
+  "id": "133efd95-eb3a-4e5b-8b56-49211be6c02d",
+  "packageName": "net.azurewebsites.beveragebot",
   "developer": {
     "name": "Jim Lane",
-    "websiteUrl": "https://beveragebot.azurewebsites.net/api/messages",
+    "websiteUrl": "https://beveragebot.azurewebsites.net",
     "privacyUrl": "https://beveragebot.azurewebsites.net/termsfeed-privacy-policy-html-english.html",
     "termsOfUseUrl": "https://beveragebot.azurewebsites.net/termsfeed-privacy-policy-html-english.html"
   },
@@ -25,7 +25,7 @@
   "accentColor": "#4464ee",
   "bots": [
     {
-      "botId": "f3758b63-c13d-497d-ab2e-241d1df2e432",
+      "botId": "133efd95-eb3a-4e5b-8b56-49211be6c02d",
       "needsChannelSelector": false,
       "isNotificationOnly": false,
       "scopes": [ "team", "personal" ]

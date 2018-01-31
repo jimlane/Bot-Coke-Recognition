@@ -170,8 +170,9 @@
     <Content Include="Resources\Icons\icon.png" />
     <Content Include="Resources\Icons\icon2.png" />
     <Content Include="termsfeed-privacy-policy-html-english.html" />
-    <Content Include="Web.config">
+    <Content Include="web.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -199,11 +200,13 @@
     <None Include="Properties\PublishProfiles\beveragerecognition - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\CokeRecognitionBot - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\CokeRecognitionBot - Web Deploy.pubxml" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <PropertyGroup>
