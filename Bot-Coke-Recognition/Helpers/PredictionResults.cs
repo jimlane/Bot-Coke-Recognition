@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Bot_Coke_Recognition.Helpers
+namespace Beverage_Bot.Helpers
 {
     [Serializable]
     public class PredictionResults

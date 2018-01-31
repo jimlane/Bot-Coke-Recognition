@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 
-namespace Bot_Coke_Recognition
+namespace Beverage_Bot
 {
     public static class WebApiConfig
     {

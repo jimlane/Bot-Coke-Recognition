@@ -10,11 +10,11 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.Bot.Connector;
-using Bot_Coke_Recognition.Dialogs;
-using Bot_Coke_Recognition.Helpers;
+using Beverage_Bot.Dialogs;
+using Beverage_Bot.Helpers;
 using Newtonsoft.Json.Linq;
 
-namespace Bot_Coke_Recognition
+namespace Beverage_Bot
 {
     [BotAuthentication]
     public class MessagesController : ApiController

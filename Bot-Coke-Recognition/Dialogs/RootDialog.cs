@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using Bot_Coke_Recognition.Helpers;
+using Beverage_Bot.Helpers;
 using Newtonsoft.Json.Linq;
 
-namespace Bot_Coke_Recognition.Dialogs
+namespace Beverage_Bot.Dialogs
 {
     [Serializable]
     public class RootDialog : IDialog<object>

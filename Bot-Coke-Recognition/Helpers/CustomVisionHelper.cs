@@ -6,7 +6,7 @@ using System.Text;
 using System.IO;
 using System.Collections.Generic;
 
-namespace Bot_Coke_Recognition.Helpers
+namespace Beverage_Bot.Helpers
 {
     [Serializable]
     public class CustomVisionHelper

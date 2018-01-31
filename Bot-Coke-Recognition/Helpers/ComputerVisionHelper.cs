@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Bot_Coke_Recognition.Helpers
+namespace Beverage_Bot.Helpers
 {
     public class ComputerVisionHelper
     {

@@ -9,10 +9,10 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using System.Web.Http;
 using System.Net.Http.Headers;
-using Bot_Coke_Recognition.Helpers;
+using Beverage_Bot.Helpers;
 
 
-namespace Bot_Coke_Recognition.Dialogs
+namespace Beverage_Bot.Dialogs
 {
     [LuisModel("c1928865-1f14-407f-b75c-2f43ea7ad190", "0ff1c954c30844ffb894631c6e26ed7b")]
     [Serializable]

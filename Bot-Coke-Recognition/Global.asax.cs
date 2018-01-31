@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
 
-namespace Bot_Coke_Recognition
+namespace Beverage_Bot
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

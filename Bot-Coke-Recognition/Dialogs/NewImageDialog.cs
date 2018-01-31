@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Connector;
-using Bot_Coke_Recognition.Helpers;
+using Beverage_Bot.Helpers;
 
 
-namespace Bot_Coke_Recognition.Dialogs
+namespace Beverage_Bot.Dialogs
 {
     [Serializable]
     public class NewImageDialog : IDialog<object>
