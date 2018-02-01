@@ -55,7 +55,7 @@ namespace Beverage_Bot.Dialogs
             }
             else
             {
-                await context.PostAsync("I'm the Beverage Recognition bot. Send me a picture!");
+                await context.PostAsync("Hi, I'm the Beverage Recognition bot. Send me a picture!");
                 context.Done("");
             }
         }

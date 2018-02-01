@@ -40,7 +40,7 @@ namespace Beverage_Bot
                             {
                                 // send initial greeting
                                 var initialGreeting = activity.CreateReply();
-                                initialGreeting.Text = "I'm the Beverage Recognition bot. Send me a picture!";
+                                initialGreeting.Text = "Hi, I'm the Beverage Recognition bot. Send me a picture!";
                                 await cli.Conversations.ReplyToActivityAsync(initialGreeting);
                             }
                         }
