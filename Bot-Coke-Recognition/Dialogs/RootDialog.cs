@@ -28,7 +28,7 @@ namespace Beverage_Bot.Dialogs
         private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (activity.Attachments.Count > 0)
+            if (this.hasValidAttachment(activity))
             {
                 await ProcessAttachments((Activity)context.Activity);
                 if (ThisIsABeveragePicture(ImageTags))
@@ -111,6 +111,18 @@ namespace Beverage_Bot.Dialogs
             {
                 context.Wait(this.MessageReceivedAsync);
             }
+        }
+
+        private bool hasValidAttachment(Activity thisActivity)
+        {
+            if (thisActivity.Attachments.Count > 0)
+            {
+                if (thisActivity.Attachments[0].ContentUrl.Contains("skype"))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private async Task<Stream> getAttachment(Activity thisActivity)
