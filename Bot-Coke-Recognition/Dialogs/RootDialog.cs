@@ -28,7 +28,7 @@ namespace Beverage_Bot.Dialogs
         private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
         {
             var activity = await result as Activity;
-            if (this.hasValidAttachment(activity))
+            if (hasValidAttachment(activity))
             {
                 await ProcessAttachments((Activity)context.Activity);
                 if (ThisIsABeveragePicture(ImageTags))
