@@ -117,12 +117,27 @@ namespace Beverage_Bot.Dialogs
         {
             if (thisActivity.Attachments.Count > 0)
             {
-                if (thisActivity.Attachments[0].ContentUrl.Contains("skype"))
+                //we have to jump through these hoops for Teams which always attaches an attachment indicating the channel
+                if (thisActivity.Attachments[0].Content != null)
                 {
-                    return false;
+                    if (thisActivity.Attachments[0].Content.ToString().Contains("skype"))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
                 }
             }
-            return true;
+            else
+            {
+                return false;
+            }
         }
 
         private async Task<Stream> getAttachment(Activity thisActivity)

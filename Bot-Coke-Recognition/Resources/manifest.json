@@ -2,7 +2,7 @@
   "$schema": "https://statics.teams.microsoft.com/sdk/v1.0/manifest/MicrosoftTeams.schema.json",
   "manifestVersion": "1.0",
   "version": "1.0.0",
-  "id": "133efd95-eb3a-4e5b-8b56-49211be6c02d",
+  "id": "884636c3-5223-4dea-ad45-d1f1b3e2b2e5",
   "packageName": "net.azurewebsites.beveragebot",
   "developer": {
     "name": "Jim Lane",
@@ -25,7 +25,7 @@
   "accentColor": "#4464ee",
   "bots": [
     {
-      "botId": "133efd95-eb3a-4e5b-8b56-49211be6c02d",
+      "botId": "884636c3-5223-4dea-ad45-d1f1b3e2b2e5",
       "needsChannelSelector": false,
       "isNotificationOnly": false,
       "scopes": [ "team", "personal" ]

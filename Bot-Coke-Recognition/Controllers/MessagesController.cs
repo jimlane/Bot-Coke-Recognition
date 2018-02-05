@@ -31,21 +31,21 @@ namespace Beverage_Bot
                 case ActivityTypes.Message:
                     await Conversation.SendAsync(activity, () => new RootDialog());
                     break;
-                case ActivityTypes.ConversationUpdate:
-                    if (activity.MembersAdded.Count > 0)
-                    {
-                        foreach (var newMember in activity.MembersAdded)
-                        {
-                            if (newMember.Id != activity.Recipient.Id)
-                            {
-                                // send initial greeting
-                                var initialGreeting = activity.CreateReply();
-                                initialGreeting.Text = "Hi, I'm the Beverage Recognition bot. Send me a picture!";
-                                await cli.Conversations.ReplyToActivityAsync(initialGreeting);
-                            }
-                        }
-                    }
-                    break;
+                //case ActivityTypes.ConversationUpdate:
+                //    if (activity.MembersAdded.Count > 0)
+                //    {
+                //        foreach (var newMember in activity.MembersAdded)
+                //        {
+                //            if (newMember.Id != activity.Recipient.Id)
+                //            {
+                //                // send initial greeting
+                //                var initialGreeting = activity.CreateReply();
+                //                initialGreeting.Text = "Hi, I'm the Beverage Recognition bot. Send me a picture!";
+                //                await cli.Conversations.ReplyToActivityAsync(initialGreeting);
+                //            }
+                //        }
+                //    }
+                //    break;
                 default:
                     HandleSystemMessage(activity);
                     break;
