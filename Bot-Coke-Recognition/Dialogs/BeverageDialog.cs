@@ -20,6 +20,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Why?");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Can-Of-Coke")]
@@ -27,7 +28,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Coke");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Can-Of-CokeZero")]
@@ -35,7 +36,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Coke Zero");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Can-Of-Diet-Coke")]
@@ -43,7 +44,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Diet Coke");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Bottle-Of-Coke")]
@@ -51,7 +52,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Coke");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Bottle-Of-Diet-Coke")]
@@ -59,7 +60,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Diet Coke");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Bottle-Of-CokeZero")]
@@ -67,7 +68,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Coke Zero");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Can-Of-Sprite")]
@@ -75,7 +76,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a can of Sprite");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Bottle-Of-Sprite")]
@@ -83,7 +84,7 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("That looks like a bottle of Sprite");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("Casual-Chat")]
@@ -91,14 +92,14 @@ namespace Beverage_Bot.Dialogs
             IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("Hello - send me a picture!");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         private async Task ResumeAfterNewImageDialog(IDialogContext context, IAwaitable<object> result)
         {
             var ImageResult = await result;
             await context.PostAsync("Image added successfully!");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("None")]
@@ -106,7 +107,7 @@ namespace Beverage_Bot.Dialogs
         IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("BeverageDialog.cs - something went wrong!");
-            context.Done("");
+            context.Done<object>(null);
         }
 
         [LuisIntent("")]
@@ -114,7 +115,7 @@ namespace Beverage_Bot.Dialogs
         IAwaitable<IMessageActivity> activity, LuisResult result)
         {
             await context.PostAsync("BeverageDialog.cs - something went wrong!");
-            context.Done("");
+            context.Done<object>(null);
         }
     }
 }

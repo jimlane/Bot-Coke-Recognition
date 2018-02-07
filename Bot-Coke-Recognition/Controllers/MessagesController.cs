@@ -25,56 +25,18 @@ namespace Beverage_Bot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            var cli = new ConnectorClient(new Uri(activity.ServiceUrl));
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
+                    //System.Diagnostics.Debug.Print("ID: " + activity.Id.ToString());
                     await Conversation.SendAsync(activity, () => new RootDialog());
                     break;
-                //case ActivityTypes.ConversationUpdate:
-                //    if (activity.MembersAdded.Count > 0)
-                //    {
-                //        foreach (var newMember in activity.MembersAdded)
-                //        {
-                //            if (newMember.Id != activity.Recipient.Id)
-                //            {
-                //                // send initial greeting
-                //                var initialGreeting = activity.CreateReply();
-                //                initialGreeting.Text = "Hi, I'm the Beverage Recognition bot. Send me a picture!";
-                //                await cli.Conversations.ReplyToActivityAsync(initialGreeting);
-                //            }
-                //        }
-                //    }
-                //    break;
                 default:
                     HandleSystemMessage(activity);
                     break;
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
-        }
-
-        private bool ThisIsABeveragePicture(List<string> imageTags)
-        {
-            foreach (var item in imageTags)
-            {
-                if (item.IndexOf("beverage") >= 0 ||
-                    item.IndexOf("can") >= 0 ||
-                    item.IndexOf("bottle") >= 0)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private IMessageActivity GatherImageTags(Activity currentActivity, List<string> theseTags)
-        {
-            foreach (var item in theseTags)
-            {
-                currentActivity.Properties.Add(new JProperty(currentActivity.Properties.Count.ToString(), item));
-            }
-            return currentActivity;
         }
 
         private Activity HandleSystemMessage(Activity message)

@@ -42,7 +42,7 @@ namespace Beverage_Bot.Dialogs
                     await context.PostAsync("Something went wrong - try again later");
                 }
 
-                context.Done("");
+                context.Done<object>(null);
             }
             catch (Exception e)
             {
@@ -87,7 +87,7 @@ namespace Beverage_Bot.Dialogs
                     await context.PostAsync("Something went wrong - try again later");
                 }
 
-                context.Done("");
+                context.Done<object>(null);
             }
             catch (Exception e)
             {

@@ -19,12 +19,20 @@ namespace Beverage_Bot.Dialogs
         private string attachURL;
         public async Task StartAsync(IDialogContext context)
         {
-            Activity a = (Activity)context.Activity;
-            if (a.Attachments.Count > 0)
+            try
             {
-                attachURL = a.Attachments[0].ContentUrl;
+                Activity a = (Activity)context.Activity;
+                if (a.Attachments.Count > 0)
+                {
+                    attachURL = a.Attachments[0].ContentUrl;
+                }
+                context.Wait(this.MessageReceivedAsync);
             }
-            context.Wait(this.MessageReceivedAsync);
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("Error - StartAsync: " + e.Message.ToString());
+                throw;
+            }
         }
 
         public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
@@ -46,18 +54,16 @@ namespace Beverage_Bot.Dialogs
                         activity.Attachments.Add(new Attachment());
                         activity.Attachments[0].ContentUrl = attachURL;
                         await context.Forward(new LuisImageDialog(), this.ResumeAfterAddImageDialog, activity, CancellationToken.None);
-                        context.Done("");
                         break;
                     case DontAddImage:
                         await context.PostAsync("OK, thanks for sharing your picture!");
-                        context.Done("Exiting");
+                        context.Done<object>(null);
                         break;
                 }
             }
             catch (TooManyAttemptsException ex)
             {
                 await context.PostAsync($"Ooops! Too many attemps :(. But don't worry, I'm handling that exception and you can try again!");
-
                 context.Wait(this.MessageReceivedAsync);
             }
         }
@@ -75,7 +81,7 @@ namespace Beverage_Bot.Dialogs
             }
             finally
             {
-                context.Wait(this.MessageReceivedAsync);
+                context.Done<object>(null);
             }
         }
     }
